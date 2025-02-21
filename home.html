@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Baby Gender Pills - Coming Soon</title>
+  <style>
+    /* Reset margins */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Full-screen video background */
+    #background-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+      object-fit: cover;
+    }
+
+    /* Semi-transparent overlay container */
+    .overlay {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4); /* dark overlay to improve text contrast */
+      padding: 20px;
+    }
+
+    /* Content container styling */
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.9); /* white background with slight transparency */
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Styling for the pills image */
+    .pills-image {
+      max-width: 150px;
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #333;
+      font-size: 2.5rem;
+    }
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #555;
+      font-size: 1.5rem;
+    }
+
+    p {
+      color: #666;
+      line-height: 1.5;
+      margin: 0 0 20px;
+      font-size: 1rem;
+    }
+
+    .email-form {
+      margin: 20px 0;
+    }
+
+    input[type="email"] {
+      width: 70%;
+      padding: 10px;
+      margin-right: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #ff659f;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background: #ff4285;
+    }
+
+    .disclaimer,
+    .footer-note {
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    .disclaimer {
+      margin-top: 20px;
+    }
+
+    .footer-note {
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Video (using MP4 for better performance) -->
+  <video autoplay muted loop id="background-video">
+    <source src="background.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Overlay Container -->
+  <div class="overlay">
+    <div class="container">
+      <!-- Pills Image -->
+      <img src="pills.png" alt="Baby Gender Pills" class="pills-image">
+      
+      <h1>Baby Gender Pills</h1>
+      <h2>It really works 50% of the time!</h2>
+      <p>
+        Get ready to have a playful twist on your baby shower or gender reveal! Baby Gender Pills is a novelty product that lets you choose pink for a girl or blue for a boy. If nature disagrees, we’ve got a money-back guarantee.
+      </p>
+      <p><strong>Sign up below</strong> to be notified the moment we launch and receive an exclusive discount on your first order!</p>
+
+      <div class="email-form">
+        <form onsubmit="saveEmail(event)">
+          <input type="email" id="emailInput" placeholder="Your Email Address" required />
+          <button type="submit">Notify Me</button>
+        </form>
+      </div>
+
+      <p class="disclaimer">
+        Disclaimer: Baby Gender Pills is a novelty product and is not intended to provide or claim any medical result.
+      </p>
+      <p class="footer-note">
+        We respect your privacy. Unsubscribe anytime.
+      </p>
+    </div>
+  </div>
+
+  <!-- Firebase integration using ES6 modules -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-analytics.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+
+    // Your web app's Firebase configuration with updated databaseURL
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2mBtPJTZ20CPLbbJXzrkIoQIZfc1ciRg",
+      authDomain: "babypills-a4c0a.firebaseapp.com",
+      databaseURL: "https://babypills-a4c0a-default-rtdb.firebaseio.com/",
+      projectId: "babypills-a4c0a",
+      storageBucket: "babypills-a4c0a.firebasestorage.app",
+      messagingSenderId: "37629563256",
+      appId: "1:37629563256:web:7eea2a7fa0bccee45ef88d",
+      measurementId: "G-WDG8KNXNWC"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+
+    // Function to save email to Firebase Realtime Database
+    function saveEmail(event) {
+      event.preventDefault();
+      const emailField = document.getElementById('emailInput');
+      const emailValue = emailField.value.trim();
+
+      if (emailValue) {
+        // Push email to 'emails' node in the database
+        push(ref(database, 'emails'), { email: emailValue })
+          .then(() => {
+            alert("Thank you! You'll be notified soon.");
+            emailField.value = "";
+          })
+          .catch((error) => {
+            alert("Error: " + error.message);
+          });
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    }
+
+    // Expose saveEmail function to the global scope for the form to access
+    window.saveEmail = saveEmail;
+  </script>
+</body>
+</html>
